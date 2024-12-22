@@ -1,10 +1,11 @@
-#include <GL/gl.h>
 #include <iostream>
+
+#include <glad/glad.h>
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
 int main(void)
 {
-    std::cout << "Application begin..." << std::endl;
 
     GLFWwindow* window;
 
@@ -24,29 +25,31 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        std::cout << "Failed to initialize OpenGL context" << std::endl;
+        return -1;
+    }
+    else {
+        std::cout << "OpenGL context initialized!" << std::endl;
+    }
+    
+    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+
+    
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+   while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 )
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-
-        // legacy OpenGL
-        glBegin(GL_TRIANGLES);
-        glVertex2f(-0.5f, -0.5f);
-        glVertex2f(0.0f, 0.5f);
-        glVertex2f(0.5f, -0.5f);
-        glEnd();
-        // end legacy
-
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
-
-
-
         /* Poll for and process events */
         glfwPollEvents();
+
     }
 
+
     glfwTerminate();
+    std::cout << "Program finished successfully" << std::endl;
     return 0;
 }

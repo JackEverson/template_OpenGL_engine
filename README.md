@@ -3,4 +3,5 @@ A template backend for OpenGL Applications
 
 
 ## dependencies 
-- GLFW
+- glad
+- glfw

@@ -1,33 +1,30 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project( template_OpenGL_engine )
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-find_package( OpenGL REQUIRED ) # technically not required for glfw
+# set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++17")
 
-include_directories(
-	./dependencies/glfw/include/
-)
+set(source_dir "${PROJECT_SOURCE_DIR}/src/")
+file(GLOB source_files "${source_dir}/*.cpp")
+add_executable(${PROJECT_NAME} ${source_files})
 
-set ( ALL_LIBS
-	${OPENGL_LIBRARY}
-	# OpenGL::GL
+set(ext_libs 
+	glad
 	glfw
 )
+target_link_libraries(${PROJECT_NAME} PUBLIC ${ext_libs})
 
-
-add_executable( enginetest src/main.cpp )
-target_link_libraries(enginetest
-	${ALL_LIBS}
+include_directories(
+	external/glad/include/
+	external/glfw/include/
 )
 
-# GLFW
-set(GLFW_INSTALL FALSE)
+# glad
+add_library(glad external/glad/src/glad.c)
 
-add_subdirectory(./dependencies/glfw/)
-
-# target_link_libraries( enginetest OpenGL::GL)
-
+# glfw
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw/)
 
 
 
-#include_directories( ${OpenCV_INCLUDE_DIRS} )
