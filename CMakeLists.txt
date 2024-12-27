@@ -16,6 +16,7 @@ set(ext_libs
 target_link_libraries(${PROJECT_NAME} PUBLIC ${ext_libs})
 
 include_directories(
+	include/
 	external/glad/include/
 	external/glfw/include/
 )
