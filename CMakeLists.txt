@@ -21,6 +21,19 @@ include_directories(
 	external/glfw/include/
 )
 
+# configure_file("${CMAKE_CURRENT_SOURCE_DIR}/res/shaders/basic.glsl" 
+	# "${CMAKE_CURRENT_BINARY_DIR}/res/shaders/basic.glsl")
+
+
+# Copy shaders
+file(GLOB shader_files "${PROJECT_SOURCE_DIR}/res/shaders/*.shader")
+add_custom_target(shader_files
+	COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+	"${CMAKE_CURRENT_SOURCE_DIR}/res/shaders/"
+	"${CMAKE_CURRENT_BINARY_DIR}/res/shaders/"
+	COMMENT "Copying data"
+)
+
 # glad
 add_library(glad external/glad/src/glad.c)
 

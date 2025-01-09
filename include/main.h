@@ -5,11 +5,23 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
+// int win_width = 3840;
+// int win_height = 2160;
+int win_width = 1920;
+int win_height = 1080;
+// int win_width = 640;
+// int win_height = 480;
+
+unsigned int indices[] = {
+    0, 1, 3,
+    1, 2, 3,
+};
 
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
+     0.5f,  0.5f, 0.0f,  // top right
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  // bottom left
+    -0.5f,  0.5f, 0.0f   // top left 
 };
 
 const char *VertexShaderSource = 
