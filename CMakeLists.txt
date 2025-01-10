@@ -17,8 +17,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${ext_libs})
 
 include_directories(
 	include/
-	external/glad/include/
-	external/glfw/include/
+	external/glad-4.6/include/
+	external/glfw-3.4/include/
 )
 
 # configure_file("${CMAKE_CURRENT_SOURCE_DIR}/res/shaders/basic.glsl" 
@@ -35,10 +35,10 @@ add_custom_target(shader_files
 )
 
 # glad
-add_library(glad external/glad/src/glad.c)
+add_library(glad external/glad-4.6/src/glad.c)
 
 # glfw
-add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw/)
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw-3.4/)
 
 
 
