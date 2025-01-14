@@ -30,7 +30,7 @@ ShaderSource ParseShader(std::string filepath){
         }
     }
 
-    std::cout << ss[0].str() << std::endl;
+    // std::cout << ss[0].str() << std::endl;
 
     return {ss[0].str(), ss[1].str()};
 }
