@@ -1,8 +1,16 @@
 #include "Engine.hpp"
+#include "GLFW/glfw3.h"
+#include <cstddef>
+#include <iostream>
 #include <stdexcept>
 
-Engine::Engine(){
+#include "Renderer.hpp"
 
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
+
+
+Engine::Engine(){
     /* Initialize the library */
     if (!glfwInit())
         throw std::runtime_error("Failed to Init GLFW");
@@ -11,9 +19,31 @@ Engine::Engine(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
                                                  //
     // /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(win_width, win_height, "test", NULL, NULL);
+    //
 
-    if (!window)
+    int monitor_count;
+    GLFWmonitor** _monitors = glfwGetMonitors(&monitor_count);
+    if (!monitor_count){
+        std::cout << "GLFWmonitor found monitors to be null" << std::endl;
+        throw std::runtime_error("GLFWMonitor found monitors to be null");
+    }
+    std::cout << "GLFWmonitors has found " << monitor_count << " monitors" << std::endl;
+    for (int i = 0; i < monitor_count; i++){
+        const GLFWvidmode* mode = glfwGetVideoMode(_monitors[i]);
+        std::cout << "Monitor " << i << ", " << _monitors[i] << ", has resolution " << mode->width << "x" << mode->height << std::endl;
+    }
+
+    // GLFWmonitor* pMonitor = glfwGetPrimaryMonitor();
+    // std::cout << "Using monitor: " << pMonitor << std::endl;
+
+    // GLFWgetmonitor
+
+        
+
+    _window = glfwCreateWindow(win_width, win_height, "Template", NULL, NULL);
+    // _window = glfwCreateWindow(win_width, win_height, "Template", pMonitor, NULL);
+    
+    if (!_window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -21,87 +51,88 @@ Engine::Engine(){
     }
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(_window);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         std::cout << "Failed to initialize OpenGL context" << std::endl;
         throw std::runtime_error("Failed to initialize OpenGL context through gladLoadGLLoader");
     }
 
-    int indices[] = {
-	0, 1, 3,
-	1, 2, 3,
-    };
-
-    float vertices[] = {
+    const float vertices[] = {
 	 0.5f,  0.5f, 0.0f,  // top right
 	 0.5f, -0.5f, 0.0f,  // bottom right
 	-0.5f, -0.5f, 0.0f,  // bottom left
 	-0.5f,  0.5f, 0.0f   // top left 
     };
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    unsigned int indices[] = {
+	0, 1, 3,
+	1, 2, 3,
+    };
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
-    glEnableVertexAttribArray(0);
+    GLCall(glGenVertexArrays(1, &VAO));
+    GLCall(glBindVertexArray(VAO));
 
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    VertexBuffer vb(vertices, 4 * 3 * sizeof(float));
+    IndexBuffer ib(indices, 6);
 
     ShaderSource shaders = ParseShader("res/shaders/basic.shader");
-    
     unsigned int shaderProgram = CompileShaders(shaders.VertexSource, shaders.FragmentSource);
+
+    GLCall(glEnableVertexAttribArray(0));
+    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0));
     
-    framebuffer_size_callback(window, win_width, win_height);
+    framebuffer_size_callback(_window, win_width, win_height);
 
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    bool goingUp = true;
+    float color = 0.0f;
 
     std::cout << "starting main program loop" << std::endl;
     /* Loop until the user closes the window */
-   while(glfwWindowShouldClose(window) == 0 )
+   while(glfwWindowShouldClose(_window) == 0 )
     {
-        // int w, h;
-        // glfwGetWindowSize(window, &w, &h);
-        // framebuffer_size_callback(window, w, h);
+        int w, h;
+        glfwGetWindowSize(_window, &w, &h);
+        framebuffer_size_callback(_window, w, h);
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        GLCall(glClear(GL_COLOR_BUFFER_BIT));
+
+        if (color > 1.0f)
+            goingUp = false;
+        else if (color < 0.0f)
+            goingUp = true;
+
+        if (goingUp)
+            color += 0.01f;
+        else
+            color -= 0.01f;
+
+        unsigned int box_color = glGetUniformLocation(shaderProgram, "aColor");
+        glUniform3f(box_color, 1.0f, 0.0f, color);
         
-        processInput(window);
+        processInput(_window);
 
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
+        GLCall(glUseProgram(shaderProgram));
+        vb.Bind();
+        ib.Bind();
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
-        glfwSwapBuffers(window);
+        GLCall(glfwSwapBuffers(_window));
         glfwPollEvents();
-
     }
 
 
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
 
+    glfwDestroyWindow(_window);
     glfwTerminate();
     std::cout << "Engine terminated successfully" << std::endl;
 }
 
 Engine::~Engine(){
-    // glDeleteVertexArrays(1, &VAO);
-    // glDeleteBuffers(1, &VBO);
-    // glDeleteBuffers(1, &EBO);
-    // glDeleteProgram(shaderProgram);
-
 }
 
 void Engine::framebuffer_size_callback(GLFWwindow * window, int width, int height){
@@ -109,7 +140,7 @@ void Engine::framebuffer_size_callback(GLFWwindow * window, int width, int heigh
     glfwGetFramebufferSize(window, &fbSizeX, &fbSizeY);
     glViewport(0, 0, fbSizeX, fbSizeY);
 
-    std::cout << "Framebuffer size: " << fbSizeX << "x" << fbSizeY << std::endl;
+    // std::cout << "Framebuffer size: " << fbSizeX << "x" << fbSizeY << std::endl;
     // glViewport(0, 0, width, height);
 }
 

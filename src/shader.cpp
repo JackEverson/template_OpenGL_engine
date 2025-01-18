@@ -1,5 +1,6 @@
 #include <ostream>
 #include <shader.hpp>
+#include "Renderer.hpp"
 
 
 ShaderSource ParseShader(std::string filepath){
@@ -30,14 +31,13 @@ ShaderSource ParseShader(std::string filepath){
         }
     }
 
+    // print the shader source
     // std::cout << ss[0].str() << std::endl;
 
     return {ss[0].str(), ss[1].str()};
 }
 
 unsigned int CompileShaders(std::string vertexshaderstring, std::string fragmentshaderstring){
-
-
     const char* VertexShaderSource = vertexshaderstring.c_str();
     const char* FragmentShaderSource = fragmentshaderstring.c_str();
 
@@ -46,9 +46,9 @@ unsigned int CompileShaders(std::string vertexshaderstring, std::string fragment
 
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &VertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    GLCall(glShaderSource(vertexShader, 1, &VertexShaderSource, NULL));
+    GLCall(glCompileShader(vertexShader));
+    GLCall(glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success));
     if (!success){
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -57,9 +57,9 @@ unsigned int CompileShaders(std::string vertexshaderstring, std::string fragment
 
     unsigned int fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &FragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    GLCall(glShaderSource(fragmentShader, 1, &FragmentShaderSource, NULL));
+    GLCall(glCompileShader(fragmentShader));
+    GLCall(glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success));
     if (!success){
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -68,9 +68,9 @@ unsigned int CompileShaders(std::string vertexshaderstring, std::string fragment
     
     unsigned int shaderProgram;
     shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    GLCall(glAttachShader(shaderProgram, vertexShader));
+    GLCall(glAttachShader(shaderProgram, fragmentShader));
+    GLCall(glLinkProgram(shaderProgram));
     glad_glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if(!success){
         glad_glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
@@ -78,9 +78,9 @@ unsigned int CompileShaders(std::string vertexshaderstring, std::string fragment
         throw std::runtime_error("Failed to link Shader program");
     }
 
-    glUseProgram(shaderProgram);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    GLCall(glUseProgram(shaderProgram));
+    GLCall(glDeleteShader(vertexShader));
+    GLCall(glDeleteShader(fragmentShader));
 
     return shaderProgram;
 
