@@ -3,6 +3,9 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
+#include "VertexArray.hpp"
 #include "shader.hpp"
 
 class Engine{

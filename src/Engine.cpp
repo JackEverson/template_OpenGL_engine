@@ -1,13 +1,10 @@
 #include "Engine.hpp"
-#include "GLFW/glfw3.h"
 #include <cstddef>
 #include <iostream>
 #include <stdexcept>
 
 #include "Renderer.hpp"
 
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
 
 
 Engine::Engine(){
@@ -17,7 +14,7 @@ Engine::Engine(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-                                                 //
+
     // /* Create a windowed mode window and its OpenGL context */
     //
 
@@ -70,17 +67,20 @@ Engine::Engine(){
 	1, 2, 3,
     };
 
-    GLCall(glGenVertexArrays(1, &VAO));
-    GLCall(glBindVertexArray(VAO));
 
+    VertexArray va;
     VertexBuffer vb(vertices, 4 * 3 * sizeof(float));
+    VertexBufferLayout layout;
+    layout.Push<float>(3);
+    va.AddBuffer(vb, layout);
+
     IndexBuffer ib(indices, 6);
+    GLCall(glEnableVertexAttribArray(0));
+    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0));
 
     ShaderSource shaders = ParseShader("res/shaders/basic.shader");
     unsigned int shaderProgram = CompileShaders(shaders.VertexSource, shaders.FragmentSource);
 
-    GLCall(glEnableVertexAttribArray(0));
-    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0));
     
     framebuffer_size_callback(_window, win_width, win_height);
 
@@ -115,6 +115,8 @@ Engine::Engine(){
 
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         GLCall(glUseProgram(shaderProgram));
+
+        va.Bind();
         vb.Bind();
         ib.Bind();
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
