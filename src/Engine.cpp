@@ -4,7 +4,10 @@
 #include <stdexcept>
 
 #include "Renderer.hpp"
-
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
+#include "VertexArray.hpp"
+#include "shader.hpp"
 
 
 Engine::Engine(){
@@ -75,11 +78,13 @@ Engine::Engine(){
     va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, 6);
+    
+    Shader shader ("res/shaders/basic.shader");
+    shader.Bind();
+
+
     GLCall(glEnableVertexAttribArray(0));
     GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0));
-
-    ShaderSource shaders = ParseShader("res/shaders/basic.shader");
-    unsigned int shaderProgram = CompileShaders(shaders.VertexSource, shaders.FragmentSource);
 
     
     framebuffer_size_callback(_window, win_width, win_height);
@@ -87,6 +92,8 @@ Engine::Engine(){
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     bool goingUp = true;
     float color = 0.0f;
+
+    va.Unbind();
 
     std::cout << "starting main program loop" << std::endl;
     /* Loop until the user closes the window */
@@ -108,13 +115,12 @@ Engine::Engine(){
         else
             color -= 0.01f;
 
-        unsigned int box_color = glGetUniformLocation(shaderProgram, "aColor");
-        glUniform3f(box_color, 1.0f, 0.0f, color);
+        shader.Bind();
+        shader.SetUniform3f("aColor", color, 0.0f, 0.0f);
         
         processInput(_window);
 
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        GLCall(glUseProgram(shaderProgram));
 
         va.Bind();
         vb.Bind();
@@ -125,9 +131,6 @@ Engine::Engine(){
         glfwPollEvents();
     }
 
-
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteProgram(shaderProgram);
 
     glfwDestroyWindow(_window);
     glfwTerminate();

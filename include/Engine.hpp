@@ -2,11 +2,7 @@
 #include <glad/glad.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
-
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
-#include "VertexArray.hpp"
-#include "shader.hpp"
+#include <iostream>
 
 class Engine{
 public:
@@ -16,9 +12,6 @@ public:
     int win_width = 1920;
     int win_height = 1080;
 
-    // buffer pointers
-    unsigned int VAO;
-    
     Engine();
     ~Engine();
 
