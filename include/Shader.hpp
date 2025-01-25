@@ -28,6 +28,7 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
+	void SetUniformFloat(const std::string& name, float f);
 	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 private: 

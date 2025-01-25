@@ -2,7 +2,6 @@
 
 #include "VertexBuffer.hpp"
 #include "VertexBufferLayout.hpp"
-#include "Renderer.hpp"
 
 class VertexArray{
 private:

@@ -3,7 +3,10 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
-#include "shader.hpp"
+#include "Shader.hpp"
+#include "IndexBuffer.hpp"
+#include "VertexArray.hpp"
+#include "IndexBuffer.hpp"
 
 // #define ASSERT(x) if (!(x)) __debugbreak(); // for MSVC 
 #define ASSERT(x) if (!(x)) std::cout << "OpenGL Error" << std::endl;
@@ -14,3 +17,12 @@
 
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
+
+
+class Renderer{
+public:
+    void Clear() const;
+    void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
+
+
+};

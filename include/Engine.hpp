@@ -17,6 +17,9 @@ public:
 
     void framebuffer_size_callback(GLFWwindow * window, int width, int height);
     void processInput(GLFWwindow *window);
+
+    float locx = 0.0f;
+    float locy = 0.0f;
 };
 
 

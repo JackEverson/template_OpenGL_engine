@@ -1,5 +1,5 @@
 #include <ostream>
-#include <shader.hpp>
+#include "Shader.hpp"
 #include "Renderer.hpp"
 
 unsigned int m_RendererID;
@@ -45,8 +45,8 @@ ShaderSource Shader::ParseShader(std::string& filepath){
     }
 
     // print the shader source
-    std::cout << ss[0].str() << std::endl;
-    std::cout << ss[1].str() << std::endl;
+    // std::cout << ss[0].str() << std::endl;
+    // std::cout << ss[1].str() << std::endl;
 
     return {ss[0].str(), ss[1].str()};
 }
@@ -105,6 +105,10 @@ void Shader::Bind() const{
 
 void Shader::Unbind() const{
     GLCall(glUseProgram(0));
+}
+
+void Shader::SetUniformFloat(const std::string& name, float f){
+    GLCall(glUniform1f(GetUniformLocation(name), f));
 }
 
 void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2){

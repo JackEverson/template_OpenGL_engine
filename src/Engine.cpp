@@ -7,7 +7,7 @@
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
 #include "VertexArray.hpp"
-#include "shader.hpp"
+#include "Shader.hpp"
 
 
 Engine::Engine(){
@@ -71,6 +71,7 @@ Engine::Engine(){
     };
 
 
+    Renderer renderer;
     VertexArray va;
     VertexBuffer vb(vertices, 4 * 3 * sizeof(float));
     VertexBufferLayout layout;
@@ -80,20 +81,13 @@ Engine::Engine(){
     IndexBuffer ib(indices, 6);
     
     Shader shader ("res/shaders/basic.shader");
-    shader.Bind();
-
-
-    GLCall(glEnableVertexAttribArray(0));
-    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0));
-
     
     framebuffer_size_callback(_window, win_width, win_height);
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    bool goingUp = true;
+    float increment = 0.01f;
     float color = 0.0f;
 
-    va.Unbind();
+
 
     std::cout << "starting main program loop" << std::endl;
     /* Loop until the user closes the window */
@@ -103,29 +97,20 @@ Engine::Engine(){
         glfwGetWindowSize(_window, &w, &h);
         framebuffer_size_callback(_window, w, h);
 
-        GLCall(glClear(GL_COLOR_BUFFER_BIT));
-
         if (color > 1.0f)
-            goingUp = false;
-        else if (color < 0.0f)
-            goingUp = true;
+            increment = -0.01f;
+        else if (color <= 0.0f)
+            increment = 0.01f;
 
-        if (goingUp)
-            color += 0.01f;
-        else
-            color -= 0.01f;
+        color += increment;
 
-        shader.Bind();
+        renderer.Clear();
         shader.SetUniform3f("aColor", color, 0.0f, 0.0f);
+        shader.SetUniform3f("aLoc", locx, locy, 0.0f);
+
+        renderer.Draw(va, ib, shader);
         
         processInput(_window);
-
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        va.Bind();
-        vb.Bind();
-        ib.Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
         GLCall(glfwSwapBuffers(_window));
         glfwPollEvents();
@@ -159,4 +144,19 @@ void Engine::processInput(GLFWwindow *window){
 
         std::cout << "left click detected at " << xpos << "x" << ypos << std::endl;
     }
+
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+        locy += 0.01f;
+    }
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+        locy -= 0.01f;
+    }
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        locx -= 0.01f;
+    }
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        locx += 0.01f;
+    }
+    
+
 }

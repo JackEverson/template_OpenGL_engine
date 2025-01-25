@@ -3,13 +3,15 @@
     layout (location = 0) in vec3 aPos;
 
     uniform vec3 aColor;
+    uniform vec3 aLoc;
 
     out vec3 color;
 
     void main()
     {
-       gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-       color = aColor;
+        vec3 newPos = aPos + aLoc;
+        gl_Position = vec4(newPos.x, newPos.y, newPos.z, 1.0);
+        color = aColor;
     };
 
 #shaderfragment
@@ -18,6 +20,6 @@
     out vec4 FragColor;
     void main()
     {
-      FragColor = vec4(color, 1.0f);
+        FragColor = vec4(color, 1.0f);
     };
 
