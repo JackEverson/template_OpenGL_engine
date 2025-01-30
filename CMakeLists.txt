@@ -22,6 +22,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${ext_libs})
 
 include_directories(
 	include/
+	external/
 	external/glad-4.6/include/
 	external/glfw-3.4/include/
 )

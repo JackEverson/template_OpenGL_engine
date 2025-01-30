@@ -3,11 +3,16 @@
 #include <iostream>
 #include <stdexcept>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "Renderer.hpp"
-#include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
-#include "VertexArray.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
+#include "VertexArray.hpp"
+#include "VertexBuffer.hpp"
+
 
 
 Engine::Engine(){
@@ -59,10 +64,10 @@ Engine::Engine(){
     }
 
     const float vertices[] = {
-	 0.5f,  0.5f, 0.0f,  // top right
-	 0.5f, -0.5f, 0.0f,  // bottom right
-	-0.5f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f   // top left 
+	 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  // top right
+	 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+	-0.5f,  0.5f, 0.0f, 0.0f, 1.0f// top left 
     };
 
     unsigned int indices[] = {
@@ -70,29 +75,35 @@ Engine::Engine(){
 	1, 2, 3,
     };
 
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     Renderer renderer;
     VertexArray va;
-    VertexBuffer vb(vertices, 4 * 3 * sizeof(float));
+    VertexBuffer vb(vertices, 4 * 5 * sizeof(float));
+
     VertexBufferLayout layout;
     layout.Push<float>(3);
+    layout.Push<float>(2);
     va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, 6);
     
-    Shader shader ("res/shaders/basic.shader");
+    // Shader shader ("res/shaders/basic.shader");
+    Shader shader ("res/shaders/basictexture.shader");
+    shader.Bind();
+
+    // Texture texture("res/textures/container.jpg");
+    Texture texture("res/textures/container2.png");
+    texture.Bind();
     
     framebuffer_size_callback(_window, win_width, win_height);
 
     float increment = 0.01f;
     float color = 0.0f;
 
-
-
     std::cout << "starting main program loop" << std::endl;
     /* Loop until the user closes the window */
-   while(glfwWindowShouldClose(_window) == 0 )
-    {
+   while(glfwWindowShouldClose(_window) == 0 ){
         int w, h;
         glfwGetWindowSize(_window, &w, &h);
         framebuffer_size_callback(_window, w, h);
@@ -107,6 +118,7 @@ Engine::Engine(){
         renderer.Clear();
         shader.SetUniform3f("aColor", color, 0.0f, 0.0f);
         shader.SetUniform3f("aLoc", locx, locy, 0.0f);
+        shader.SetUniform1i("atexCoord", 0);
 
         renderer.Draw(va, ib, shader);
         
@@ -114,7 +126,7 @@ Engine::Engine(){
 
         GLCall(glfwSwapBuffers(_window));
         glfwPollEvents();
-    }
+   }
 
 
     glfwDestroyWindow(_window);
