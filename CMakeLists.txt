@@ -27,24 +27,39 @@ include_directories(
 	external/glfw-3.4/include/
 )
 
+add_library(glad external/glad-4.6/src/glad.c) # glad
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw-3.4/) # glfw
+
 # configure_file("${CMAKE_CURRENT_SOURCE_DIR}/res/shaders/basic.glsl" 
 	# "${CMAKE_CURRENT_BINARY_DIR}/res/shaders/basic.glsl")
 
-
-# Copy shaders
-file(GLOB shader_files "${PROJECT_SOURCE_DIR}/res/shaders/*.shader")
-add_custom_target(shader_files
+file(GLOB res_files "${PROJECT_SOURCE_DIR}/res/*")
+add_custom_target(res_files
 	COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-	"${CMAKE_CURRENT_SOURCE_DIR}/res/shaders/"
-	"${CMAKE_CURRENT_BINARY_DIR}/res/shaders/"
+	"${CMAKE_CURRENT_SOURCE_DIR}/res/"
+	"${CMAKE_CURRENT_BINARY_DIR}/res/"
 	COMMENT "Copying data"
 )
+add_dependencies(${PROJECT_NAME} res_files)
 
-# glad
-add_library(glad external/glad-4.6/src/glad.c)
+# Copy shaders
+# file(GLOB shader_files "${PROJECT_SOURCE_DIR}/res/shaders/*.shader")
+# add_custom_target(shader_files
+# 	COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+# 	"${CMAKE_CURRENT_SOURCE_DIR}/res/shaders/"
+# 	"${CMAKE_CURRENT_BINARY_DIR}/res/shaders/"
+# 	COMMENT "Copying data"
+# )
 
-# glfw
-add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw-3.4/)
+# Copy textures
+# file(GLOB texture_files "${PROJECT_SOURCE_DIR}/res/textures/*")
+# add_custom_target(texture_files
+# 	COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+# 	"${CMAKE_CURRENT_SOURCE_DIR}/res/textures/"
+# 	"${CMAKE_CURRENT_BINARY_DIR}/res/textures/"
+# 	COMMENT "Copying data"
+# )
+
 
 
 

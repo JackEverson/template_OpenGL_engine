@@ -75,6 +75,7 @@ Engine::Engine(){
 	1, 2, 3,
     };
 
+    GLCall(glEnable(GL_BLEND));
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     Renderer renderer;
@@ -93,7 +94,8 @@ Engine::Engine(){
     shader.Bind();
 
     // Texture texture("res/textures/container.jpg");
-    Texture texture("res/textures/container2.png");
+    // Texture texture("res/textures/container2.png");
+    Texture texture("res/textures/sushi.png");
     texture.Bind();
     
     framebuffer_size_callback(_window, win_width, win_height);

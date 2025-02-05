@@ -1,1 +1,3 @@
-./build/template_OpenGL_engine
+cd build
+./template_OpenGL_engine
+cd -
