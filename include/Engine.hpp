@@ -20,6 +20,12 @@ public:
 
     float locx = 0.0f;
     float locy = 0.0f;
+    float locz = -1.0f;
+
+    float red = 0.1f;
+    float other = 0.2f;
+    bool approach = false;
+    
 };
 
 

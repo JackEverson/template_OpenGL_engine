@@ -13,8 +13,8 @@ bool GLLogCall(const char* function, const char* file, int line){
     return true;
 }
 
-void Renderer::Clear() const{
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+void Renderer::Clear(float r, float g, float b, float a) const{
+    glClearColor(r, g, b, a);
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
 }
 
@@ -22,8 +22,7 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
     shader.Bind();
     va.Bind();
     ib.Bind();
-
     
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
 }

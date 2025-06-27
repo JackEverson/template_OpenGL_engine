@@ -36,8 +36,8 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/external/glfw-3.4/) # glfw
 file(GLOB res_files "${PROJECT_SOURCE_DIR}/res/*")
 add_custom_target(res_files
 	COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-	"${CMAKE_CURRENT_SOURCE_DIR}/res/"
-	"${CMAKE_CURRENT_BINARY_DIR}/res/"
+	"${CMAKE_CURRENT_SOURCE_DIR}/res/${CMAKE_BUILD_TYPE}"
+	"${CMAKE_CURRENT_BINARY_DIR}/res/${CMAKE_BUILD_TYPE}"
 	COMMENT "Copying data"
 )
 add_dependencies(${PROJECT_NAME} res_files)

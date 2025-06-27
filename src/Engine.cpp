@@ -43,8 +43,6 @@ Engine::Engine(){
 
     // GLFWgetmonitor
 
-        
-
     _window = glfwCreateWindow(win_width, win_height, "Template", NULL, NULL);
     // _window = glfwCreateWindow(win_width, win_height, "Template", pMonitor, NULL);
     
@@ -100,9 +98,6 @@ Engine::Engine(){
     
     framebuffer_size_callback(_window, win_width, win_height);
 
-    float increment = 0.01f;
-    float color = 0.0f;
-
     std::cout << "starting main program loop" << std::endl;
     /* Loop until the user closes the window */
    while(glfwWindowShouldClose(_window) == 0 ){
@@ -110,16 +105,9 @@ Engine::Engine(){
         glfwGetWindowSize(_window, &w, &h);
         framebuffer_size_callback(_window, w, h);
 
-        if (color > 1.0f)
-            increment = -0.01f;
-        else if (color <= 0.0f)
-            increment = 0.01f;
-
-        color += increment;
-
-        renderer.Clear();
-        shader.SetUniform3f("aColor", color, 0.0f, 0.0f);
-        shader.SetUniform3f("aLoc", locx, locy, 0.0f);
+        renderer.Clear(red, 0.2f, 0.2f, 0.2f);
+        shader.SetUniform3f("aColor", 0.0f, 0.0f, 0.0f);
+        shader.SetUniform3f("aLoc", locx, locy, locz);
         shader.SetUniform1i("atexCoord", 0);
 
         renderer.Draw(va, ib, shader);
@@ -156,20 +144,29 @@ void Engine::processInput(GLFWwindow *window){
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
 
-        std::cout << "left click detected at " << xpos << "x" << ypos << std::endl;
+        std::cout << "left click detected at x: " << xpos << ", y: " << ypos << std::endl;
     }
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-        locy += 0.01f;
+        locy += 0.001f;
     }
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-        locy -= 0.01f;
+        locy -= 0.001f;
     }
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        locx -= 0.01f;
+        locx -= 0.001f;
     }
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-        locx += 0.01f;
+        locx += 0.001f;
+    }
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+        approach = true;
+    }
+
+    if (approach) {
+        //locz -= 0.0001f;
+        if (red < 1.0f) red += 0.00001;
+        if (other > 0.0f) other -= 0.00001;
     }
     
 
